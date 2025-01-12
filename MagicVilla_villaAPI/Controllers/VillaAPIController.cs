@@ -16,7 +16,7 @@ namespace MagicVilla_villaAPI.Controllers
             return Ok(VillaStore.villaList);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetVilla")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -40,6 +40,11 @@ namespace MagicVilla_villaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<VillaDTO> CreateVilla([FromBody] VillaDTO villaDTO)
         {
+            if (VillaStore.villaList.FirstOrDefault(u => u.Name.ToLower() == villaDTO.Name.ToLower()) != null)
+            {
+                ModelState.AddModelError("", "Villa already exists!");
+                return BadRequest(ModelState);
+            }
             if (villaDTO == null) 
             { 
                 return BadRequest(villaDTO); 
