@@ -20,11 +20,11 @@ namespace MagicVilla_villaAPI.Controllers
         }
 
         // HTTP GET method to retrieve a specific villa by ID
-        [HttpGet("{id:int}", Name = "GetVilla")]
+        [HttpGet("{id:int}", Name = "GetVilla")] // Setting the route to include an integer ID parameter
         [ProducesResponseType(StatusCodes.Status200OK)] // Specifies that this method can return a 200 OK response
         [ProducesResponseType(StatusCodes.Status404NotFound)] // Specifies that this method can return a 404 Not Found response
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Specifies that this method can return a 400 Bad Request response
-        public ActionResult<VillaDTO> GetVilla(int id)
+        public ActionResult<VillaDTO> GetVilla(int id) // Method to get a villa by ID, with the ID parameter being an integer
         {
             // Check if the ID is 0, which is invalid
             if (id == 0)
@@ -49,7 +49,7 @@ namespace MagicVilla_villaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)] // Specifies that this method can return a 201 Created response
         [ProducesResponseType(StatusCodes.Status404NotFound)] // Specifies that this method can return a 404 Not Found response
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Specifies that this method can return a 400 Bad Request response
-        public ActionResult<VillaDTO> CreateVilla([FromBody] VillaDTO villaDTO)
+        public ActionResult<VillaDTO> CreateVilla([FromBody] VillaDTO villaDTO) // Method to create a new villa, with the villaDTO parameter being passed from the request body
         {
             // Check if a villa with the same name already exists
             if (VillaStore.villaList.FirstOrDefault(u => u.Name.ToLower() == villaDTO.Name.ToLower()) != null)
@@ -83,8 +83,8 @@ namespace MagicVilla_villaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)] // Specifies that this method can return a 204 No Content response
         [ProducesResponseType(StatusCodes.Status404NotFound)] // Specifies that this method can return a 404 Not Found response
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Specifies that this method can return a 400 Bad Request response
-        [HttpDelete("{id:int}", Name = "DeleteVilla")]
-        public IActionResult DeleteVilla(int id)
+        [HttpDelete("{id:int}", Name = "DeleteVilla")] // Setting the route to include an integer ID parameter
+        public IActionResult DeleteVilla(int id) // Method to delete a villa by ID, with the ID parameter being an integer
         {
             // Check if the ID is 0, which is invalid
             if (id == 0)
@@ -105,10 +105,10 @@ namespace MagicVilla_villaAPI.Controllers
         }
 
         // HTTP PUT method to update a villa by ID
-        [HttpPut("{id:int}", Name = "UpdateVilla")]
+        [HttpPut("{id:int}", Name = "UpdateVilla")] // Setting the route to include an integer ID parameter
         [ProducesResponseType(StatusCodes.Status204NoContent)] // Specifies that this method can return a 204 No Content response
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Specifies that this method can return a 400 Bad Request response
-        public IActionResult UpdateVilla(int id, [FromBody] VillaDTO villaDTO)
+        public IActionResult UpdateVilla(int id, [FromBody] VillaDTO villaDTO) // Method to update a villa by ID, with the villaDTO parameter being passed from the request body
         {
             // Check if the villaDTO is null or the ID does not match the villaDTO ID
             if (villaDTO == null || id != villaDTO.Id)
@@ -126,28 +126,33 @@ namespace MagicVilla_villaAPI.Controllers
             return NoContent(); // Return 204 No Content
         }
 
-        [HttpPatch("{id:int}", Name = "UpdatePartialVilla")]
+        // HTTP PATCH method to partially update a villa by ID
+        [HttpPatch("{id:int}", Name = "UpdatePartialVilla")] // Setting the route to include an integer ID parameter
         [ProducesResponseType(StatusCodes.Status204NoContent)] // Specifies that this method can return a 204 No Content response
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Specifies that this method can return a 400 Bad Request response
-        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaDTO> patchDTO)
+        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaDTO> patchDTO) // Method to partially update a villa by ID, with the patchDTO parameter being passed from the request body
         {
+            // Check if the patchDTO is null or the ID is 0, which is invalid
             if (patchDTO == null || id == 0)
             {
                 return BadRequest(); // Return 400 Bad Request
             }
+
+            // Find the villa with the specified ID in the villa list
             var villa = VillaStore.villaList.FirstOrDefault(u => u.Id == id);
-            if (villa == null)
+            if (villa == null) // Check if the villa is not found
             {
-                return BadRequest();
+                return BadRequest(); // Return 400 Bad Request
             }
+
+            // Apply the patch to the villa
             patchDTO.ApplyTo(villa, ModelState);
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Check if the model state is valid
             {
-                return BadRequest(ModelState);
+                return BadRequest(ModelState); // Return 400 Bad Request with the model state
             }
-            return NoContent();
+
+            return NoContent(); // Return 204 No Content
         }
-
-
     }
 }
