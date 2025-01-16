@@ -10,11 +10,19 @@ namespace MagicVilla_villaAPI.Controllers
     [ApiController]
     public class VillaAPIController : ControllerBase // Inheriting from ControllerBase, which provides basic functionalities for an API controller
     {
+        private readonly ILogger<VillaAPIController> logger;
+
+        public VillaAPIController(ILogger<VillaAPIController> _logger)
+        {
+            logger = _logger;
+        }
+
         // HTTP GET method to retrieve all villas
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)] // Specifies that this method can return a 200 OK response
         public ActionResult<IEnumerable<VillaDTO>> GetVillas()
         {
+            logger.LogInformation("Getting all villas");
             // Returns the list of villas from the VillaStore
             return Ok(VillaStore.villaList);
         }
@@ -29,6 +37,7 @@ namespace MagicVilla_villaAPI.Controllers
             // Check if the ID is 0, which is invalid
             if (id == 0)
             {
+                logger.LogError("Get villa error with ID " + id);
                 return BadRequest(); // Return 400 Bad Request
             }
 
